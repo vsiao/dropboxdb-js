@@ -6,8 +6,8 @@ var app = express();
 
 dropboxdb.connect({
   /* dropboxdb-example */
-  key: 'iueh7hcdze8wfi9',
-  secret: 'zdubg7a6w4yetes'
+  key: 'oam7u7ywtam4uy9',
+  secret: 'rnmduug4yrne9q4'
 });
 
 app.configure(function() {
@@ -48,6 +48,30 @@ app.get('/insert/:collection', function(req, res) {
         res.render('index', {msg: stat});
       }
     });
+  dropboxdb.insert(req.params.collection,
+    {a:'A',b:'herp',c:'dawg',dog:'eat'}, function(error, stat) {
+      if (error) {
+        res.render('index', {msg: error});
+      } else {
+        res.render('index', {msg: stat});
+      }
+    });
+});
+
+app.get('/drop/:collection', function(req, res) {
+  dropboxdb.drop(req.params.collection, function(error, stat) {
+      if (error) {
+        res.render('index', {msg: error});
+      } else {
+        res.render('index', {msg: stat});  
+      }
+    });
+});
+
+app.get('/find/:collection', function(req, res) {
+  dropboxdb.find(req.params.collection, function(row) {row['b'] === 'herp'}, function(res) {
+    console.log(res);
+  });
 });
 
 
