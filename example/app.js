@@ -80,5 +80,13 @@ app.get('/user', function(req, res) {
   });
 });
 
+app.get('/remove/:collection', function(req, res) {
+  dropboxdb.remove(req.params.collection, 'eat', function(error, stat) {
+    if (error) {
+      return;
+    }
+  });
+});
+
 app.listen(3000);
 console.log('Listening on port 3000');
