@@ -74,6 +74,11 @@ app.get('/find/:collection', function(req, res) {
   });
 });
 
+app.get('/user', function(req, res) {
+  dropboxdb.userInfo(function(user){
+    console.log(user);
+  });
+});
 
 app.listen(3000);
 console.log('Listening on port 3000');
