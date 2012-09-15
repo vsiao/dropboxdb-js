@@ -6,9 +6,8 @@ var app = express();
 
 dropboxdb.connect({
   /* dropboxdb-example */
-  key: '4j7ghd5e1qbe17o',
-  secret: 'dirul8pr3qnhtv8',
-  sandbox: true
+  key: 'iueh7hcdze8wfi9',
+  secret: 'zdubg7a6w4yetes'
 });
 
 app.configure(function() {
@@ -18,7 +17,13 @@ app.configure(function() {
 });
 
 app.get('/', function(req, res) {
-  res.render('index', {msg: 'hello'});
+  dropboxdb.authenticate(function(error, client) {
+    if (error) {
+      res.render('index', {msg: 'You\'re a fuck up.'});
+    } else {
+      res.render('index', {msg: 'You authenticated!!'});
+    }
+  });
 });
 
 app.listen(3000);
