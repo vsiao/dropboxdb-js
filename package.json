@@ -1,0 +1,27 @@
+{
+  "name": "dropboxdb",
+  "version": "0.0.1",
+  "description": "API for Dropbox-based database solution",
+  "keywords": ["dropbox", "database"],
+  "contributors": [
+    {
+      "name": "Norbert Chu",
+      "email": "nrchu@andrew.cmu.edu"
+    },
+    {
+      "name": "Vincent Siao",
+      "email": "vsiao@andrew.cmu.edu"
+    },
+    {
+      "name": "Peter Xiao",
+      "email": "phx@andrew.cmu.edu"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vincentsiao/dropboxdb-js.git"
+  },
+  "dependencies": {
+    "dropbox": "0.6.1"
+  }
+}
