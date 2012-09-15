@@ -16,7 +16,8 @@
     "url": "https://github.com/vincentsiao/dropboxdb-js.git"
   },
   "dependencies": {
-    "dropbox": "0.6.1"
+    "dropbox": "0.6.1",
+    "lodash": "0.7.0"
   },
   "main": "index.js",
   "license": "MIT"

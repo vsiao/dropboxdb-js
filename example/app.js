@@ -17,7 +17,7 @@ app.configure(function() {
 });
 
 app.get('/', function(req, res) {
-  dropboxdb.authenticate(function(error, client) {
+  dropboxdb.authenticate(function(error) {
     if (error) {
       res.render('index', {msg: 'You\'re a fuck up.'});
     } else {
@@ -25,6 +25,31 @@ app.get('/', function(req, res) {
     }
   });
 });
+
+app.get('/create/:collection', function(req, res) {
+  dropboxdb.create(req.params.collection, 
+    {primaryKey: 'dog'},
+    function(error, stat) {
+      if (error) {
+        res.render('index', {msg: error});
+      } else {
+        res.render('index', {msg: stat});
+      }
+    }
+  );
+});
+
+app.get('/insert/:collection', function(req, res) {
+  dropboxdb.insert(req.params.collection,
+    {a:'A',b:'derp',c:'dawg',dog:'world'}, function(error, stat) {
+      if (error) {
+        res.render('index', {msg: error});
+      } else {
+        res.render('index', {msg: stat});
+      }
+    });
+});
+
 
 app.listen(3000);
 console.log('Listening on port 3000');
