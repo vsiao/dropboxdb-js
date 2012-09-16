@@ -28,7 +28,7 @@ app.get('/', function(req, res) {
 
 app.get('/create/:collection', function(req, res) {
   dropboxdb.create(req.params.collection, 
-    {primaryKey: 'dog'},
+    {primaryKey: 'dog', schema: ['a', 'b', 'c', 'dog']},
     function(error, stat) {
       if (error) {
         res.render('index', {msg: error});
@@ -87,6 +87,16 @@ app.get('/remove/:collection', function(req, res) {
     }
   });
 });
-
+/*
+app.get('/update/:collection', function(req, res) {
+  dropboxdb.update(req.params.collection, {a:'A',b:'lerp',c:'dawg',dog:'world'}, function(error, stat) {
+    if (error) {
+      res.render('index', {msg: error});
+    } else {
+      res.render('index', {msg: stat});
+    }
+  });
+});
+*/
 app.listen(3000);
 console.log('Listening on port 3000');
