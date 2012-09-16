@@ -1,1 +1,310 @@
-{{msg}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>DropboxDB JS API</title>
+<script src="http://code.jquery.com/jquery-1.8.0.js"
+  type="text/javascript"></script>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css'>
+<style type="text/css">
+body {
+  color: #333;
+  font-family: Ubuntu, Helvetica, Arial, sans-serif;
+}
+pre {
+  border: 1px solid #06799f;
+  border-radius: 2px;
+  background: #eee;
+  box-shadow: 0 2px 0 #eee;
+  color: #000;
+  font-size: 14px;
+  line-height: 18px;
+  padding: 10px;
+  width: 600px;
+}
+input[type=text] {
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  font-family: Ubuntu, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  padding: 6px 9px;
+}
+input[type=text]:focus {
+  border-color: #188d8e;
+}
+#addField,
+#addInsertField,
+input[type=submit] {
+  background: #eee;
+  border: 1px solid #aaa;
+  border-radius: 2px;
+  color: #06799f;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px 9px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+}
+#addField:hover,
+#addInsertField:hover,
+input[type=submit]:hover {
+  background: #06799f;
+  border-color: #333;
+  color: #fff;
+}
+#schemaFields,
+#recordFields {
+  list-style-type: none;
+}
+#schemaFields li,
+#recordFields li {
+  margin-top: 5px;
+}
+.removeField {
+  font-weight: 700;
+  border-radius: 10px;
+  color: #666;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  text-decoration: none;
+  line-height: 21px;
+  font-size: 14px;
+  margin-right: 5px;
+  transition: all 0.2s ease;
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+}
+.removeField:hover {
+  background: #EC0033;
+  color: #fff;
+}
+.fieldName {
+  margin-right: 10px;
+}
+</style>
+</head>
+<body>
+<h1>DropboxDB JS API</h1>
+
+<h2>User</h2>
+<h3>dropboxdb.userInfo</h3>
+<pre id="userResults">
+{{userInfo}}
+</pre>
+
+<h2>Collections</h2>
+<ul>
+<li>
+  <h3>dropboxdb.show</h3>
+  <a href="#" id="showButton">Show Collections</a>
+  <pre id="showResults">
+  </pre>
+  <script type="text/javascript">
+  $('#showButton').click(function() {
+    $('#showResults').html('Loading...');
+    $.ajax({
+      type: 'GET',
+      url: '/show',
+      success: function(data) {
+        $('#showResults').html(JSON.stringify(data, null, 2));
+      }
+    });
+    event.preventDefault();
+  });
+  </script>
+</li>
+<li id="createExample">
+  <h3>dropboxdb.create</h3>
+  <form id="createForm">
+    <input type="text" class="nameInput" placeholder="Collection Name" />
+    <a href="#" id="addField">Add Field</a>
+    <input type="submit" value="Create Collection" />
+    <ul id="schemaFields">
+    </ul>
+  </form>
+  <pre id="createResults">
+  </pre>
+  <script type="text/javascript">
+    $('#addField').click(function(event) {
+      $('<li><a href="#" class="removeField">X</a>' +
+        '<input type="text" placeholder="Field Name" class="fieldName" />' +
+        'Primary Key? <input type="radio" name="primary" /></li>')
+        .hide()
+        .appendTo($('#schemaFields'))
+        .slideDown(300);
+      event.preventDefault();
+    });
+    $('#createForm .removeField').live('click', function(event) {
+      $(event.target).closest('li').eq(0).slideUp(300, function() {
+        $(this).remove();
+      });
+      event.preventDefault();
+    });
+    $('#createForm').submit(function(event) {
+      var data = {};
+      data.collectionName = $('#createForm .nameInput').val();
+      data.schema = [];
+      $('#schemaFields li').each(function(idx, li) {
+        var fieldName = $(li).find('input[type=text]').val();
+        data.schema.push(fieldName);
+        if ($(li).find('input[type=radio]').get(0).checked) {
+          data.primaryKey = fieldName;
+        }
+      });
+      $('#createResults').html('Loading...');
+      $.ajax({
+        type: 'POST',
+        url: '/create',
+        data: data,
+        error: function(jqXHR) {
+          var response = JSON.parse(jqXHR.responseText);
+          $('#createResults').html(
+            'Error ' + response.status + ':\n' +
+            JSON.stringify(JSON.parse(response.responseText), null, 2)
+          );
+        },
+        success: function(data) {
+          $('#createResults').html(JSON.stringify(data, null, 2));
+        }
+      });
+      event.preventDefault();
+    });
+  </script>
+</li>
+<li id="dropExample">
+  <h3>dropboxdb.drop</h3>
+  <form id="dropForm">
+    <input type="text" class="nameInput" placeholder="Collection Name" />
+    <input type="submit" value="Drop Collection" />
+  </form>
+  <pre id="dropResults">
+  </pre>
+  <script type="text/javascript">
+  $('#dropForm').submit(function(event) {
+    $('#dropResults').html('Loading...');
+    $.ajax({
+      type: 'DELETE',
+      url: '/drop',
+      data: {
+        collectionName: $('#dropForm .nameInput').val()
+      },
+      error: function(jqXHR) {
+        var response = JSON.parse(jqXHR.responseText);
+        $('#dropResults').html(
+          'Error ' + response.status + ':\n' +
+          JSON.stringify(JSON.parse(response.responseText), null, 2)
+        );
+      },
+      success: function(data) {
+        $('#dropResults').html(JSON.stringify(data, null, 2));
+      }
+    });
+    event.preventDefault();
+  });
+  </script>
+</li>
+</ul>
+
+<h2>Records</h2>
+<ul>
+<li>
+  <h3>dropboxdb.insert</h3>
+  <form id="insertForm">
+    <input type="text" class="nameInput" placeholder="Collection Name" />
+    <a href="#" id="addInsertField">Add Field</a>
+    <input type="submit" value="Insert Record" />
+    <ul id="recordFields">
+    </ul>
+  </form>
+  <pre id="insertResults">
+  </pre>
+  <script type="text/javascript">
+    $('#addInsertField').click(function(event) {
+      $('<li><a href="#" class="removeField">X</a>' +
+        '<input type="text" placeholder="Name" />' +
+        '<input type="text" placeholder="Value" /></li>')
+        .hide()
+        .appendTo($('#recordFields'))
+        .slideDown(300);
+      event.preventDefault();
+    });
+    $('#insertForm .removeField').live('click', function(event) {
+      $(event.target).closest('li').eq(0).slideUp(300, function() {
+        $(this).remove();
+      });
+      event.preventDefault();
+    });
+    $('#insertForm').submit(function(event) {
+      var data = {};
+      data.collectionName = $('#insertForm .nameInput').val();
+      data.record = {};
+      $('#recordFields li').each(function(idx, li) {
+        var inputs = $(li).find('input[type=text]');
+        data.record[inputs.eq(0).val()] = inputs.eq(1).val();
+      });
+      $('#insertResults').html('Loading...');
+      $.ajax({
+        type: 'POST',
+        url: '/insert',
+        data: data,
+        error: function(jqXHR) {
+          var response = JSON.parse(jqXHR.responseText);
+          $('#insertResults').html(
+            'Error ' + response.status + ':\n' +
+            JSON.stringify(JSON.parse(response.responseText), null, 2)
+          );
+        },
+        success: function(data) {
+          $('#insertResults').html(JSON.stringify(data, null, 2));
+        }
+      });
+      event.preventDefault();
+    });
+  </script>
+</li>
+<li>
+  <h3>dropboxdb.update</h3>
+</li>
+<li>
+  <h3>dropboxdb.remove</h3>
+  <form id="removeForm">
+    <input type="text" class="nameInput" placeholder="Collection Name" />
+    <input type="text" class="keyInput" placeholder="key" />
+    <input type="submit" value="Remove Record" />
+  </form>
+  <pre id="removeResults">
+  </pre>
+  <script type="text/javascript">
+  $('#removeForm').submit(function(event) {
+    $('#removeResults').html('Loading...');
+    $.ajax({
+      type: 'DELETE',
+      url: '/remove',
+      data: {
+        collectionName: $('#removeForm .nameInput').val(),
+        key: $('#removeForm .keyInput').val()
+      },
+      error: function(jqXHR) {
+        var response = JSON.parse(jqXHR.responseText);
+        $('#removeResults').html(
+          'Error ' + response.status + ':\n' +
+          JSON.stringify(JSON.parse(response.responseText), null, 2)
+        );
+      },
+      success: function(data) {
+        $('#removeResults').html(JSON.stringify(data, null, 2));
+      }
+    });
+    event.preventDefault();
+  });
+  </script>
+</li>
+<li>
+  <h3>dropboxdb.find</h3>
+</li>
+</ul>
