@@ -76,6 +76,7 @@ app.get('/user', function(req, res) {
 app.get('/remove/:collection', function(req, res) {
   dropboxdb.remove(req.params.collection, 'eat', function(error, stat) {
     if (error) {
+      console.log("ERROR REMOVING: " + error.status);
       return;
     }
   });
