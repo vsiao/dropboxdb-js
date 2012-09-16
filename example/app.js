@@ -87,7 +87,7 @@ app.get('/remove/:collection', function(req, res) {
     }
   });
 });
-/*
+
 app.get('/update/:collection', function(req, res) {
   dropboxdb.update(req.params.collection, {a:'A',b:'lerp',c:'dawg',dog:'world'}, function(error, stat) {
     if (error) {
@@ -97,6 +97,6 @@ app.get('/update/:collection', function(req, res) {
     }
   });
 });
-*/
+
 app.listen(3000);
 console.log('Listening on port 3000');
