@@ -1,6 +1,6 @@
 {
   "name": "dropboxdb",
-  "version": "0.1.8",
+  "version": "0.2.4",
   "description": "API for Dropbox-based database solution",
   "keywords": [
     "dropbox",
