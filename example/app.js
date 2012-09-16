@@ -11,6 +11,7 @@ dropboxdb.connect({
 });
 
 app.configure(function() {
+  app.use(express.bodyParser());
   app.engine('html', cons.handlebars);
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'html');
@@ -19,47 +20,59 @@ app.configure(function() {
 app.get('/', function(req, res) {
   dropboxdb.authenticate(function(error) {
     if (error) {
-      res.render('index', {msg: 'You\'re a fuck up.'});
+      res.render('index');
     } else {
-      res.render('index', {msg: 'You authenticated!!'});
+      dropboxdb.userInfo(function(userInfo) {
+        res.render('index', {userInfo: JSON.stringify(userInfo, null, 2)});
+      });
     }
   });
 });
 
-app.get('/create/:collection', function(req, res) {
-  dropboxdb.create(req.params.collection, 
-    {schema: ['a', 'b', 'c', 'dog']},
+app.get('/show', function(req, res) {
+  dropboxdb.show(function(entries) {
+    res.send(200, entries);
+  });
+});
+
+app.post('/create', function(req, res) {
+  var options = {};
+  if (req.body.schema) options.schema = req.body.schema;
+  if (req.body.primaryKey) options.primaryKey = req.body.primaryKey;
+
+  dropboxdb.create(req.body.collectionName, options,
     function(error, stat) {
       if (error) {
-        res.render('index', {msg: error});
+        res.send(500, error);
       } else {
-        res.render('index', {msg: stat});
+        res.send(200, stat);
       }
     }
   );
 });
 
-app.get('/insert/:collection', function(req, res) {
-  dropboxdb.insert(req.params.collection,
-    {a:'A',b:'derp',c:'dawg',dog:'world'},
-    function(error, stat) {
-      if (error) {
-        res.render('index', {msg: error});
-      } else {
-        res.render('index', {msg: stat});
-      }
-    }
-  );
-});
-
-app.get('/drop/:collection', function(req, res) {
-  dropboxdb.drop(req.params.collection, function(error, stat) {
+app.delete('/drop', function(req, res) {
+  dropboxdb.drop(req.body.collectionName, function(error, stat) {
     if (error) {
-      res.render('index', {msg: error});
+      res.send(500, error);
     } else {
-      res.render('index', {msg: stat});  
+      res.send(200, stat);
     }
   });
+});
+
+app.post('/insert', function(req, res) {
+  dropboxdb.insert(
+    req.body.collectionName,
+    req.body.record,
+    function(error, stat) {
+      if (error) {
+        res.send(500, error);
+      } else {
+        res.send(200, stat);
+      }
+    }
+  );
 });
 
 app.get('/find/:collection', function(req, res) {
@@ -74,16 +87,22 @@ app.get('/find/:collection', function(req, res) {
 app.get('/user', function(req, res) {
   dropboxdb.userInfo(function(user){
     console.log(user);
+    res.send({});
   });
 });
 
-app.get('/remove/:collection', function(req, res) {
-  dropboxdb.remove(req.params.collection, 'eat', function(error, stat) {
-    if (error) {
-      console.log("ERROR REMOVING: " + error.status);
-      return;
+app.delete('/remove', function(req, res) {
+  dropboxdb.remove(
+    req.body.collectionName,
+    req.body.key,
+    function(error, stat) {
+      if (error) {
+        res.send(500, error);
+      } else {
+        res.send(200, stat);
+      }
     }
-  });
+  );
 });
 
 app.get('/update/:collection', function(req, res) {
@@ -97,12 +116,6 @@ app.get('/update/:collection', function(req, res) {
       }
     }
   );
-});
-
-app.get('/show', function(req, res) {
-  dropboxdb.show(function(entries) {
-    console.log(entries);
-  });
 });
 
 app.get('/getLatest/:collection', function(req, res) {
