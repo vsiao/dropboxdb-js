@@ -62,7 +62,7 @@ app.get('/drop/:collection', function(req, res) {
 });
 
 app.get('/find/:collection', function(req, res) {
-  dropboxdb.find(req.params.collection, function(row) {return row['b'] === 'herp';}, function(res) {
+  dropboxdb.find(req.params.collection, function(row) {return true;}, function(res) {
     console.log(res);
   });
 });
