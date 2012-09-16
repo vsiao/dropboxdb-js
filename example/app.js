@@ -71,7 +71,7 @@ app.post('/insert', function(req, res) {
     req.body.record,
     function(error, stat) {
       if (error) {
-      console.log(error);
+        console.log(error);
         res.send(500, error);
       } else {
       console.log(stat);
@@ -84,11 +84,14 @@ app.post('/insert', function(req, res) {
 app.put('/update', function(req, res) {
   dropboxdb.update(
     req.body.collectionName,
+    req.body.key,
     req.body.record,
     function(error, stat) {
       if (error) {
+        console.log(error);
         res.send(500, error);
       } else {
+        console.log(stat);
         res.send(200, stat);
       }
     }

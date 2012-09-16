@@ -58,10 +58,12 @@ input[type=submit]:hover {
   border-color: #333;
   color: #fff;
 }
+#updateFields,
 #schemaFields,
 #recordFields {
   list-style-type: none;
 }
+#updateFields li,
 #schemaFields li,
 #recordFields li {
   margin-top: 5px;
@@ -262,10 +264,15 @@ input[type=submit]:hover {
         data: data,
         error: function(jqXHR) {
           var response = JSON.parse(jqXHR.responseText);
-          debugger;
+          var responseBody;
+          if (typeof response.responseText === 'object') {
+            responseBody = response.responseText;
+          } else {
+            responseBody = JSON.parse(response.responseText);
+          }
           $('#insertResults').html(
             'Error ' + response.status + ':\n' +
-            JSON.stringify(JSON.parse(response.responseText), null, 2)
+            JSON.stringify(responseBody, null, 2)
           );
         },
         success: function(data) {
@@ -308,6 +315,7 @@ input[type=submit]:hover {
     $('#updateForm').submit(function(event) {
       var data = {};
       data.collectionName = $('#updateForm .nameInput').val();
+      data.key = $('#updateForm .keyInput').val();
       data.record = {};
       $('#updateFields li').each(function(idx, li) {
         var inputs = $(li).find('input[type=text]');
@@ -320,9 +328,15 @@ input[type=submit]:hover {
         data: data,
         error: function(jqXHR) {
           var response = JSON.parse(jqXHR.responseText);
+          var responseBody;
+          if (typeof response.responseText === 'object') {
+            responseBody = response.responseText;
+          } else {
+            responseBody = JSON.parse(response.responseText);
+          }
           $('#updateResults').html(
             'Error ' + response.status + ':\n' +
-            JSON.stringify(JSON.parse(response.responseText), null, 2)
+            JSON.stringify(responseBody, null, 2)
           );
         },
         success: function(data) {
@@ -354,9 +368,15 @@ input[type=submit]:hover {
       },
       error: function(jqXHR) {
         var response = JSON.parse(jqXHR.responseText);
+        var responseBody;
+        if (typeof response.responseText === 'object') {
+          responseBody = response.responseText;
+        } else {
+          responseBody = JSON.parse(response.responseText);
+        }
         $('#removeResults').html(
           'Error ' + response.status + ':\n' +
-          JSON.stringify(JSON.parse(response.responseText), null, 2)
+          JSON.stringify(responseBody, null, 2)
         );
       },
       success: function(data) {
