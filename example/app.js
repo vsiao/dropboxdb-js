@@ -91,5 +91,10 @@ app.get('/update/:collection', function(req, res) {
   });
 });
 
+app.get('/show', function(req, res) {
+  dropboxdb.show(function(entries) {
+    console.log(entries);
+  });
+});
 app.listen(3000);
 console.log('Listening on port 3000');
