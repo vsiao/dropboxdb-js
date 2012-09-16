@@ -262,12 +262,14 @@ input[type=submit]:hover {
         data: data,
         error: function(jqXHR) {
           var response = JSON.parse(jqXHR.responseText);
+          debugger;
           $('#insertResults').html(
             'Error ' + response.status + ':\n' +
             JSON.stringify(JSON.parse(response.responseText), null, 2)
           );
         },
         success: function(data) {
+          debugger;
           $('#insertResults').html(JSON.stringify(data, null, 2));
         }
       });

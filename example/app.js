@@ -30,8 +30,12 @@ app.get('/', function(req, res) {
 });
 
 app.get('/show', function(req, res) {
-  dropboxdb.show(function(entries) {
-    res.send(200, entries);
+  dropboxdb.show(function(err, entries) {
+    if (err) {
+      res.send(500, err);
+    } else {
+      res.send(200, entries);
+    }
   });
 });
 
@@ -67,8 +71,10 @@ app.post('/insert', function(req, res) {
     req.body.record,
     function(error, stat) {
       if (error) {
+      console.log(error);
         res.send(500, error);
       } else {
+      console.log(stat);
         res.send(200, stat);
       }
     }
