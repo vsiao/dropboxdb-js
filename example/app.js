@@ -105,5 +105,13 @@ app.get('/show', function(req, res) {
   });
 });
 
+app.get('/getLatest/:collection', function(req, res) {
+  dropboxdb.getLatest(req.params.collection,
+    5,
+    function(res) {
+      console.log(res);
+    });
+  });
+
 app.listen(3000);
 console.log('Listening on port 3000');
