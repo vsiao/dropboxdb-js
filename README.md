@@ -1,7 +1,9 @@
 DropboxDB.js
 ============
 
-##npm install dropboxdb##
+Have too much Dropbox space? Concerned about the incredible speed and reliability of modern database solutions? Look no further. DropboxDB.js (DBDBJS) provides a clearly lacking API to convert your ill-gotten Dropbox space into a cheap, slow, and inefficient imitation of your alternative data stores.
+
+`npm install dropboxdb` to use.
 
 ```javascript
 var dropboxdb = require('dropboxdb')
