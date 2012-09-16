@@ -28,7 +28,7 @@ app.get('/', function(req, res) {
 
 app.get('/create/:collection', function(req, res) {
   dropboxdb.create(req.params.collection, 
-    {primaryKey: 'dog', schema: ['a', 'b', 'c', 'dog']},
+    {schema: ['a', 'b', 'c', 'dog']},
     function(error, stat) {
       if (error) {
         res.render('index', {msg: error});
@@ -41,30 +41,34 @@ app.get('/create/:collection', function(req, res) {
 
 app.get('/insert/:collection', function(req, res) {
   dropboxdb.insert(req.params.collection,
-    {a:'A',b:'derp',c:'dawg',dog:'world'}, function(error, stat) {
+    {a:'A',b:'derp',c:'dawg',dog:'world'},
+    function(error, stat) {
       if (error) {
         res.render('index', {msg: error});
       } else {
         res.render('index', {msg: stat});
       }
-    });
-
+    }
+  );
 });
 
 app.get('/drop/:collection', function(req, res) {
   dropboxdb.drop(req.params.collection, function(error, stat) {
-      if (error) {
-        res.render('index', {msg: error});
-      } else {
-        res.render('index', {msg: stat});  
-      }
-    });
+    if (error) {
+      res.render('index', {msg: error});
+    } else {
+      res.render('index', {msg: stat});  
+    }
+  });
 });
 
 app.get('/find/:collection', function(req, res) {
-  dropboxdb.find(req.params.collection, function(row) {return true;}, function(res) {
-    console.log(res);
-  });
+  dropboxdb.find(req.params.collection,
+    function(row) {return true;},
+    function(res) {
+      console.log(res);
+    }
+  );
 });
 
 app.get('/user', function(req, res) {
@@ -83,13 +87,16 @@ app.get('/remove/:collection', function(req, res) {
 });
 
 app.get('/update/:collection', function(req, res) {
-  dropboxdb.update(req.params.collection, {a:'A',b:'lerp',c:'dawg',dog:'world', ID:'2'}, function(error, stat) {
-    if (error) {
-      res.render('index', {msg: error});
-    } else {
-      res.render('index', {msg: stat});
+  dropboxdb.update(req.params.collection,
+    {a:'A',b:'lerp',c:'dawg',dog:'world', ID:'2'},
+    function(error, stat) {
+      if (error) {
+        res.render('index', {msg: error});
+      } else {
+        res.render('index', {msg: stat});
+      }
     }
-  });
+  );
 });
 
 app.get('/show', function(req, res) {
@@ -97,5 +104,6 @@ app.get('/show', function(req, res) {
     console.log(entries);
   });
 });
+
 app.listen(3000);
 console.log('Listening on port 3000');
