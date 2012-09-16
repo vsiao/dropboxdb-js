@@ -31,7 +31,9 @@ input[type=text] {
 input[type=text]:focus {
   border-color: #188d8e;
 }
+#showButton,
 #addField,
+#addUpdateField,
 #addInsertField,
 input[type=submit] {
   background: #eee;
@@ -47,7 +49,9 @@ input[type=submit] {
   -moz-transition: all 0.2s ease;
   -o-transition: all 0.2s ease;
 }
+#showButton:hover,
 #addField:hover,
+#addUpdateField:hover,
 #addInsertField:hover,
 input[type=submit]:hover {
   background: #06799f;
@@ -92,10 +96,14 @@ input[type=submit]:hover {
 <h1>DropboxDB JS API</h1>
 
 <h2>User</h2>
+<ul>
+<li>
 <h3>dropboxdb.userInfo</h3>
 <pre id="userResults">
 {{userInfo}}
 </pre>
+</li>
+</ul>
 
 <h2>Collections</h2>
 <ul>
@@ -269,6 +277,59 @@ input[type=submit]:hover {
 </li>
 <li>
   <h3>dropboxdb.update</h3>
+  <form id="updateForm">
+    <input type="text" class="nameInput" placeholder="Collection Name" />
+    <input type="text" class="keyInput" placeholder="key" />
+    <a href="#" id="addUpdateField">Add Field</a>
+    <input type="submit" value="Update Record" />
+    <ul id="updateFields">
+    </ul>
+  </form>
+  <pre id="updateResults">
+  </pre>
+  <script type="text/javascript">
+    $('#addUpdateField').click(function(event) {
+      $('<li><a href="#" class="removeField">X</a>' +
+        '<input type="text" placeholder="Name" />' +
+        '<input type="text" placeholder="Value" /></li>')
+        .hide()
+        .appendTo($('#updateFields'))
+        .slideDown(300);
+      event.preventDefault();
+    });
+    $('#updateForm .removeField').live('click', function(event) {
+      $(event.target).closest('li').eq(0).slideUp(300, function() {
+        $(this).remove();
+      });
+      event.preventDefault();
+    });
+    $('#updateForm').submit(function(event) {
+      var data = {};
+      data.collectionName = $('#updateForm .nameInput').val();
+      data.record = {};
+      $('#updateFields li').each(function(idx, li) {
+        var inputs = $(li).find('input[type=text]');
+        data.record[inputs.eq(0).val()] = inputs.eq(1).val();
+      });
+      $('#updateResults').html('Loading...');
+      $.ajax({
+        type: 'PUT',
+        url: '/update',
+        data: data,
+        error: function(jqXHR) {
+          var response = JSON.parse(jqXHR.responseText);
+          $('#updateResults').html(
+            'Error ' + response.status + ':\n' +
+            JSON.stringify(JSON.parse(response.responseText), null, 2)
+          );
+        },
+        success: function(data) {
+          $('#updateResults').html(JSON.stringify(data, null, 2));
+        }
+      });
+      event.preventDefault();
+    });
+  </script>
 </li>
 <li>
   <h3>dropboxdb.remove</h3>
@@ -305,6 +366,35 @@ input[type=submit]:hover {
   </script>
 </li>
 <li>
-  <h3>dropboxdb.find</h3>
+  <h3>dropboxdb.browse</h3>
+  <form id="browseForm">
+    <input type="text" class="nameInput" placeholder="Collection Name" />
+    <input type="submit" value="Browse Collection" />
+  </form>
+  <pre id="browseResults">
+  </pre>
+  <script type="text/javascript">
+  $('#browseForm').submit(function(event) {
+    $('#browseResults').html('Loading...');
+    $.ajax({
+      type: 'GET',
+      url: '/browse',
+      data: {
+        collectionName: $('#browseForm .nameInput').val()
+      },
+      error: function(jqXHR) {
+        var response = JSON.parse(jqXHR.responseText);
+        $('#browseResults').html(
+          'Error ' + response.status + ':\n' +
+          JSON.stringify(JSON.parse(response.responseText), null, 2)
+        );
+      },
+      success: function(data) {
+        $('#browseResults').html(JSON.stringify(data, null, 2));
+      }
+    });
+    event.preventDefault();
+  });
+  </script>
 </li>
 </ul>

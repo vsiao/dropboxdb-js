@@ -75,20 +75,18 @@ app.post('/insert', function(req, res) {
   );
 });
 
-app.get('/find/:collection', function(req, res) {
-  dropboxdb.find(req.params.collection,
-    function(row) {return true;},
-    function(res) {
-      console.log(res);
+app.put('/update', function(req, res) {
+  dropboxdb.update(
+    req.body.collectionName,
+    req.body.record,
+    function(error, stat) {
+      if (error) {
+        res.send(500, error);
+      } else {
+        res.send(200, stat);
+      }
     }
   );
-});
-
-app.get('/user', function(req, res) {
-  dropboxdb.userInfo(function(user){
-    console.log(user);
-    res.send({});
-  });
 });
 
 app.delete('/remove', function(req, res) {
@@ -105,26 +103,32 @@ app.delete('/remove', function(req, res) {
   );
 });
 
-app.get('/update/:collection', function(req, res) {
-  dropboxdb.update(req.params.collection,
-    {a:'A',b:'lerp',c:'dawg',dog:'world', ID:'2'},
-    function(error, stat) {
-      if (error) {
-        res.render('index', {msg: error});
+app.get('/browse', function(req, res) {
+  dropboxdb.find(
+    req.query.collectionName,
+    function(record) { return true; },
+    function(err, data) {
+      if (err) {
+        res.send(500, err);
       } else {
-        res.render('index', {msg: stat});
+        res.send(200, data);
       }
     }
   );
 });
 
-app.get('/getLatest/:collection', function(req, res) {
-  dropboxdb.getLatest(req.params.collection,
-    5,
-    function(res) {
-      console.log(res);
-    });
+app.get('/user', function(req, res) {
+  dropboxdb.userInfo(function(user){
+    console.log(user);
+    res.send({});
   });
+});
+
+app.get('/getLatest/:collection', function(req, res) {
+  dropboxdb.getLatest(req.params.collection, 5,
+    function(res) { console.log(res); }
+  );
+});
 
 app.listen(3000);
 console.log('Listening on port 3000');
