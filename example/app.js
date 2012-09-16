@@ -97,16 +97,12 @@ app.get('/update/:collection', function(req, res) {
     }
   });
 });
-<<<<<<< HEAD
-=======
-*/
 
 app.get('/show', function(req, res) {
   dropboxdb.show(function(entries) {
     console.log(entries);
   });
 });
->>>>>>> 59569ca981a992699048ea238a206d15c703f397
 
 app.listen(3000);
 console.log('Listening on port 3000');
